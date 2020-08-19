@@ -1,0 +1,52 @@
+<!--The content below is only a placeholder and can be replaced.-->
+<div style="text-align:center">
+  <h1>
+    Welcome to {{ title }}!
+  </h1>
+  
+</div>
+<h2 style="padding-left: 10px;">Table With Filter, Sorting and Column Drag and Drop </h2>
+<div style="padding: 10px; margin-bottom: 10px; color:red;" >Note: 
+  <ul>
+    <li>For Single Column Sorting use click on column header title.</li>
+    <li> For Multiple Sorting Use Shift key with click. </li>
+    <li>For Filter text in value in column header inputs and press Enter key </li>
+  </ul>
+</div>
+<div id="table-container" style="height:400px;overflow:auto;">
+<table mat-table [dataSource]="dataSource" cdkDropListGroup cdkDropList cdkDropListOrientation="horizontal" (cdkDropListDropped)="dropListDropped($event)">
+  <Form [formGroup]="filterForm" novalidate>
+    <ng-container *ngFor="let column of columns; let i = index" [matColumnDef]="column.field">
+      <th mat-header-cell *matHeaderCellDef id="{{column.field}}"
+      cdkDrag cdkDropListLockAxis="x">
+        <div>
+          <div class="headerTitle" (click)="sortData($event,column.field)">{{ column.displayName }} </div>
+          <div class="headerSort" *ngIf="column.isSortable">
+            <div class="sortIcon">
+              <mat-icon (click)="clearSort(column.field)">close</mat-icon>
+            </div>
+            <div class="sortSeq" *ngIf="sortColumns.length > 1">
+              {{column.sortSequence}}
+            </div>
+            <div class="sortIcon" >
+              <mat-icon *ngIf="column.isAscending">arrow_upward</mat-icon>
+              <mat-icon *ngIf="!column.isAscending">arrow_downward</mat-icon>
+            </div>
+            
+            
+          </div>
+        </div>
+        <mat-form-field>
+          <input matInput id="{{column.field}}-filter" formControlName="{{column.field}}" (keydown)="handleKeyDown($event,column.field)" placeholder="Search with {{ column.displayName }}" (click)="$event.stopPropagation();" />
+          <button mat-button *ngIf="filterForm.get(column.field).value" matSuffix mat-icon-button aria-label="Clear" (click)="$event.stopPropagation(); filterForm.get(column.field).setValue(''); filterData();">
+            <mat-icon>close</mat-icon>
+          </button>
+        </mat-form-field>
+      </th>
+    <td mat-cell *matCellDef="let row" > {{ row[column.field] }}  </td>
+    </ng-container>
+  </Form>
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+</table>
+</div>
